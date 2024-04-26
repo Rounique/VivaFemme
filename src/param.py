@@ -16,11 +16,11 @@ settings = {
             },
             'fnn':{
                 'l': [100],  # list of number of nodes in each layer
-                'lr': 0.001,  # learning rate
-                'b': 4,  # batch size
-                'e': 10,  # epoch
+                'lr': 0.01, # learning rate 0.001
+                'b': 128,  # batch size used to  be 4
+                'e': 20,  # epoch used to be 10
                 'nns': 3,  # number of negative samples
-                'ns': 'female_bias',  # 'none', 'uniform', 'unigram', 'unigram_b', 'female_bias'
+                'ns': 'female_bias',  # 'none', 'uniform', 'unigram', 'unigram_b', 'female_bias', 'all-female_bias
                 'loss': 'normal',  # 'SL'-> superloss, 'DP' -> Data Parameters, 'normal' -> Binary Cross Entropy
             },
             'bnn':{
@@ -29,7 +29,7 @@ settings = {
                 'b': 128,  # batch size
                 'e': 5,  # epoch
                 'nns': 3,  # number of negative samples
-                'ns': 'none',  # 'uniform', 'unigram', 'unigram_b'
+                'ns': 'female_bias',  # 'uniform', 'unigram', 'unigram_b'
                 's': 1,  # # sample_elbo for bnn
                 'loss': 'normal',  # 'SL'-> superloss, 'DP' -> Data Parameters, 'normal' -> Binary Cross Entropy
             },
@@ -47,7 +47,7 @@ settings = {
                 'w': 1 #cooccurrence window
             }
         },
-        'cmd': ['test','eval'],  # 'train', 'test', 'eval', 'plot', 'agg', 'fair'
+        'cmd': ['train','test','eval'],  # 'train', 'test', 'eval', 'plot', 'agg', 'fair'
        #' nfolds': 3, toy
          'nfolds': 5,
         'train_test_split': 0.85,

@@ -27,7 +27,7 @@ class Ntf(nn.Module):
         genders = vecs['gender'].nonzero()[1]
         percentage_of_females = len(genders)/y_test.shape[1]
         # desired_distribution = {"f": percentage_of_females, "m": 1-percentage_of_females}
-        desired_distribution = {"f": 0.9, "m": 0.1}
+        desired_distribution = {"f": 0.1, "m": 0.9}
         for pred_set in (['test', 'train', 'valid'] if on_train_valid_set else ['test']):
             fold_mean = pd.DataFrame()
             if per_instance: fold_mean_per_instance = pd.DataFrame()

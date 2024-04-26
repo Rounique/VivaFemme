@@ -56,12 +56,13 @@ class Fnn(Ntf):
         if ns == "inverse_unigram" or ns.startswith("temporal_inverse_unigram"): return self.ns_inverse_unigram(logits_gender['pred'], y, unigram, nns)
         if ns == "inverse_unigram_b": return self.ns_inverse_unigram_mini_batch(logits_gender['pred'], y, nns)
         if ns == "female_bias": return self.female_bias(logits_gender, y)
+        if ns == "all_female_bias": return self.all_female_bias(logits_gender, y)
         if ns == "fair_inverse_unigram_b": return self.ns_fair_inverse_unigram_b(logits_gender, y, nns)
         # return self.weighted(y_, y)
         cri = nn.BCELoss()
         return cri(logits_gender['pred'].squeeze(1), y.squeeze(1))
 
-    def female_bias(self, logits_gender, targets, pos_weight=2.5, female_weight=1000):
+    def female_bias(self, logits_gender, targets, pos_weight=2.5, female_weight=16):
         logits = logits_gender['pred']
         females = logits_gender['female']
         targets = targets.squeeze(1)
@@ -69,6 +70,27 @@ class Fnn(Ntf):
         females = females.squeeze(1)
 
         return (-targets * torch.log(logits) * pos_weight + (1 - targets) * - torch.log(1 - logits) + (female_weight * -females * torch.log(logits))).sum()
+    
+    # def all_female_bias(self, logits_gender, targets, pos_weight=2.5, female_weight=2, all_female_weight = 4):
+    #     logits = logits_gender['pred']
+    #     females = logits_gender['female'] # adding strength to false negative female + true positive female, i.e., if the model doesn't give high probability to female that are in the team, it will be punished by an extra increase in loss
+    #     all_females = logits_gender['all_female'] # adding strength to false positive female (+ true positive female) (all females basically)
+    #     targets = targets.squeeze(1)
+    #     logits = logits.squeeze(1)
+    #     females = females.squeeze(1)
+    #
+    #     return (-targets * torch.log(logits) * pos_weight + (1 - targets) * - torch.log(1 - logits) + (female_weight * -females * torch.log(logits)) + (all_female_weight * -all_females * torch.log(logits))).sum()
+    def all_female_bias(self, logits_gender, targets, pos_weight=2.5, all_female_weight = 64):
+        logits = logits_gender['pred']
+        females = logits_gender['female'] # adding strength to false negative female + true positive female, i.e., if the model doesn't give high probability to female that are in the team, it will be punished by an extra increase in loss
+        all_females = logits_gender['all_female'] # adding strength to false positive female (+ true positive female) (all females basically)
+        targets = targets.squeeze(1)
+        logits = logits.squeeze(1)
+        females = females.squeeze(1)
+
+        return (-targets * torch.log(logits) * pos_weight + (1 - targets) * - torch.log(1 - logits) + (all_female_weight * -all_females * torch.log(logits))).sum()
+
+
 
 
     # def female_bias(self, logits_gender, targets, pos_weight=2.5, female_weight=10):
@@ -224,8 +246,8 @@ class Fnn(Ntf):
         nns = params['nns']
         ns = params['ns']
         input_size = vecs['skill'].shape[1]
-        output_size = len(indexes['i2c'])
-        # output_size = vecs['member'].shape[1]
+        # output_size = len(indexes['i2c'])
+        output_size = vecs['member'].shape[1]
 
         unigram = Team.get_unigram(vecs['member'])
         
@@ -246,10 +268,12 @@ class Fnn(Ntf):
             train_valid_loss[i] = {'train': [], 'valid': []}
 
         vecs['member_female'] = lil_matrix(hstack([vecs['member'],vecs['female']]))
+        vecs['member_female'] = lil_matrix(hstack([vecs['member_female'],vecs['all_female']]))
         start_time = time.time()
         # Training K-fold
         for foldidx in splits['folds'].keys():
             # Retrieving the folds
+
             X_train = vecs['skill'][splits['folds'][foldidx]['train'], :]
             y_train = vecs['member_female'][splits['folds'][foldidx]['train']]
             X_valid = vecs['skill'][splits['folds'][foldidx]['valid'], :]
@@ -293,7 +317,8 @@ class Fnn(Ntf):
                     for batch_idx, (X, y_f, index) in enumerate(data_loaders[phase]):
                         torch.cuda.empty_cache()
                         y = y_f[:, :, :output_size]
-                        f = y_f[:, :, -output_size:]
+                        f = y_f[:, :, -output_size*2:-output_size]
+                        all_f = y_f[:, :, -output_size:]
                         X = X.float().to(device=self.device)  # Get data to cuda if possible
                         y = y.float().to(device=self.device)
                         if phase == 'train':
@@ -306,7 +331,7 @@ class Fnn(Ntf):
                             y_ = self.forward(X)
 
                             if loss_type == 'normal':
-                                loss = self.cross_entropy({'pred': y_, 'female': f}, y, ns, nns, unigram)
+                                loss = self.cross_entropy({'pred': y_, 'female': f, 'all_female': all_f}, y, ns, nns, unigram)
                             elif loss_type == 'SL':
                                 loss = criterion(y_.squeeze(1), y.squeeze(1), index)
                             elif loss_type == 'DP':
@@ -325,7 +350,7 @@ class Fnn(Ntf):
                             self.train(False)  # Set model to valid mode
                             y_ = self.forward(X)
                             if loss_type == 'normal' or loss_type == 'DP':
-                                loss = self.cross_entropy({'pred': y_, 'female': f}, y, ns, nns, unigram)
+                                loss = self.cross_entropy({'pred': y_, 'female': f, 'all_female': all_f}, y, ns, nns, unigram)
                             else:
                                 loss = criterion(y_.squeeze(), y.squeeze())
                             valid_running_loss += loss.item()
