@@ -1,5 +1,6 @@
-# ``OpeNTF``: An Open-Source Neural Team Formation Benchmark Library 
-Team formation involves selecting a team of skillful experts who will, more likely than not, accomplish a task. Researchers have proposed a rich body of computational methods to automate the traditionally tedious and error-prone manual process. We previously released OpeNTF, an open-source framework hosting canonical neural models as the cutting-edge class of approaches, along with large-scale training datasets from varying domains. In this paper, we contribute OpeNTF2 that extends the initial release in two prime directions. (1) The first of its kind in neural team formation, we integrated `debiasing reranking algorithms` to mitigate the `popularity` and `gender` disparities in the neural models’ team recommendations based on two alternative notions of fairness: equality of opportunity and demographic parity. (2) We further contribute a `temporal` training strategy for neural models’ training to capture the evolution of experts’ skills and collaboration ties over time, as opposed to randomly shuffled training datasets. OpeNTF2 is a forward-looking effort to automate team formation via fairness-aware and time-sensitive methods. AI-ML-based solutions are increasingly impacting how resources are allocated to various groups in society, and ensuring fairness and time are systematically considered is key.
+# ``VivaFemme``: Mitigating Gender Bias in Neural Team Recommendation via Female-Advocate Loss Regularization
+
+To this end, pre- and post-processing debiasing techniques have been initially proposed, mainly for being model-agnostic with little to no modification to the model's architecture. However, their limited mitigation performance has proven futile, especially in the presence of extreme bias, e.g. 5% female experts in the training datasets, urging further development of in-process debiasing techniques. In this paper, we are the first to propose an in-process gender debiasing method in neural team recommendation via a novel modification to models' conventional cross-entropy loss function. Specifically, (1) we dramatically penalize the model (i.e., an increase to the loss) for false negative female experts, and meanwhile, (2) we randomly sample from female experts and reinforce the likelihood of female participation in the predicted teams, even at the cost of increasing false positive females. Our experiments on a benchmark dataset withholding extreme gender bias demonstrate our method's competence in mitigating neural models' gender bias while maintaining accuracy, resulting in diverse yet successful teams.
 
 <table border=0>
 <tr>
@@ -25,7 +26,7 @@ Team formation involves selecting a team of skillful experts who will, more like
 
 </td>
 <td><img src='./misc/adila_flow_.png' width="600" align="right"" /></td>
-<!-- <td><img src='./src/mdl/team_inheritance_hierarchy.png' width="90%%" /></td> -->
+<!-- <td><img src='./src/mdl/vivafemme_loss.jpg' width="90%%" /></td> -->
 </tr>
 </table>
 
