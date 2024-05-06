@@ -26,7 +26,7 @@ As modern tasks have been surpassing the capacity of individuals, collaborative 
 
 </td>
 <td><img src='VF.jpg' width="600" align="right"" /></td>
-<!-- <td><img src='./src/mdl/VF.jpg' width="90%%" /></td> -->
+<!-- <td><img src='VF.jpg' width="90%%" /></td> -->
 </tr>
 </table>
 
@@ -87,7 +87,7 @@ Neural team recommendation has brought state-of-the-art efficacy while enhancing
 
 Raw dataset, e.g., scholarly papers from AMiner's citation network dataset of [``dblp``](https://originalstatic.aminer.cn/misc/dblp.v12.7z), movies from [``imdb``](https://datasets.imdbws.com/), or US patents from [``uspt``](https://patentsview.org/download/data-download-tables) were assumed to be populated in [``data/raw``](data/raw). For the sake of integration test, tiny-size toy example datasets [``toy.dblp.v12.json``](data/raw/dblp/toy.dblp.v12.json) from [``dblp``](https://originalstatic.aminer.cn/misc/dblp.v12.7z), [[``toy.title.basics.tsv``](data/raw/imdb/toy.title.basics.tsv), [``toy.title.principals.tsv``](data/raw/imdb/toy.title.principals.tsv), [``toy.name.basics.tsv``](data/raw/imdb/toy.name.basics.tsv)] from [``imdb``](https://datasets.imdbws.com/) and [``toy.patent.tsv``](data/preprocessed/uspt/toy.patent.tsv) have been already provided.
 
-<p align="center"><img src='./src/cmn/dataset_hierarchy.png' width="300" ></p>
+<p align="center"><img src='dataset_hierarchy.png' width="300" ></p>
 
 Raw data will be preprocessed into two main ``sparse`` matrices each row of which represents: 
 
@@ -101,7 +101,7 @@ The sparse matrices and the indices will be persisted in [``data/preprocessed/{d
 
 > Our pipeline benefits from parallel generation of sparse matrices for teams that significantly reduces the preprocessing time as shown below:
 > 
-> <p align="center"><img src="./data/speedup.jpg" width="200"><img src="./data/speedup_loglog.jpg" width="190"></p>
+> <p align="center"><img src="speedup.jpg" width="200"><img src="./data/speedup_loglog.jpg" width="190"></p>
 
 
 Please note that the preprocessing step will be executed once. Subsequent runs load the persisted pickle files. In order to regenerate them, one should simply delete them. 
@@ -115,7 +115,7 @@ We randomly take ``85%`` of the dataset for the train-validation set and ``15%``
 
 Previous works in team formation presumed that teams follow the i.i.d property and hence when training their models they followed the bag of teams approach, where they train and validate their models on a shuffled dataset of teams. Moreover, they were interpolative and did not try to predict _future_ successful teams. In this work, we aim at extrapolating and predicting _future_ teams of experts. We sort the teams by time intervals and train a neural model incrementally  through the ordered collection of teams in [C<sub>0</sub>, ..C<sub>t</sub>, ..C<sub>T</sub>]. As can be seen in Figure below, after random initialization of skills’ and experts’ embeddings at t=0, we start training the model on the teams in the first time interval C<sub>0</sub> for a number of epochs, then we continue with training  on the second time interval C<sub>1</sub> using the learned embeddings from the previous time interval and so forth until we finish the training on the last training time interval C<sub>t=T</sub>. We believe that using this approach, will help the model understand how experts’ skills and collaborative ties evolve through time and the final embeddings are their optimum representation in the latent space to predict _future_ successful teams at time interval C<sub>t=T+1</sub>.
 
-<p align="center"><img src='./src/mdl/tntf.png' width="600"></p>
+<p align="center"><img src='tntf.png' width="600"></p>
 
 
 
@@ -131,7 +131,7 @@ For example, for our feedforward baseline [``fnn``](./src/mdl/fnn.py), the model
 Currently, we support neural models:
 1) Bayesian [``bnn``](./src/mdl/bnn.py) where model's parameter (weights) is assumed to be drawn from Gaussian (Normal) distribution and the task is to not to learn the weight but the mean (μ) and standard deviation (σ) of the distribution at each parameter.
 
-<p align="center"><img src='./src/mdl/bnn.png' width="350" ></p>
+<p align="center"><img src='bnn.png' width="350" ></p>
 
 2) non-Bayesian feedforward [``fnn``](./src/mdl/fnn.py) where the model's parameter (weights) is to be learnt.
 
@@ -191,5 +191,5 @@ The following table is a sample result of vivaFemme on imdb dataset and bnn and 
 <p align="center"><img src='bnn_utility.png' width="550" ></p>
 <p align="center"><img src='fnn_utility.png' width="550" ></p>
 
-<p align="center"><img src='bnn_ndkl.png' width="1000" ></p>
-<p align="center"><img src='fnn_ndkl.png' width="1000" ></p>
+<p align="center"><img src='bnn_ndkl.png' width="600" ></p>
+<p align="center"><img src='fnn_ndkl.png' width="600" ></p>
