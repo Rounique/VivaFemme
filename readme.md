@@ -25,7 +25,7 @@ As modern tasks have been surpassing the capacity of individuals, collaborative 
 
 
 </td>
-<td><img src='./src/mdl/VF.jpg' width="600" align="right"" /></td>
+<td><img src='VF.jpg' width="600" align="right"" /></td>
 <!-- <td><img src='./src/mdl/VF.jpg' width="90%%" /></td> -->
 </tr>
 </table>
@@ -80,7 +80,7 @@ This script loads and preprocesses the same dataset [``toy.dblp.v12.json``](data
 Neural team recommendation has brought state-of-the-art efficacy while enhancing efficiency at forming teams of experts whose success in completing complex tasks is almost surely guaranteed. Yet proposed methods overlook diversity; that is, predicted teams are male-dominated and female participation is scarce. To this end, pre- and post-processing debiasing techniques have been initially proposed, mainly for being model-agnostic with little to no modification to the model's architecture. However, their limited mitigation performance has proven futile, especially in the presence of extreme bias, urging further development of \textit{in}-process debiasing techniques. In this paper, we are the first to propose an in-process gender debiasing method in neural team recommendation via a novel modification to models' conventional cross-entropy loss function. Specifically, (1) we dramatically penalize the model (i.e., an increase to the loss) for false negative female experts, and meanwhile, (2) we randomly sample from female experts and reinforce the likelihood of female participation in the predicted teams, even at the cost of increasing false positive females.
 
 
-<p align="center"><img src='./src/mdl/VF.jpg' width="1000" ></p>
+<p align="center"><img src='VF.jpg' width="1000" ></p>
 
 
 #### **3.2. Datasets and Parallel Preprocessing**
@@ -188,8 +188,8 @@ We used [``pytrec_eval``](https://github.com/cvangysel/pytrec_eval) to evaluate 
 
 The following table is a sample result of vivaFemme on imdb dataset and bnn and fnn embedding baseline:
 
-<p align="center"><img src='./src/mdl/bnn_utility.png' width="550" ></p>
-<p align="center"><img src='./src/mdl/fnn_utility.png' width="550" ></p>
+<p align="center"><img src='bnn_utility.png' width="550" ></p>
+<p align="center"><img src='fnn_utility.png' width="550" ></p>
 
-<p align="center"><img src='./src/mdl/bnn_ndkl.png' width="1000" ></p>
-<p align="center"><img src='./src/mdl/fnn_ndkl.png' width="1000" ></p>
+<p align="center"><img src='bnn_ndkl.png' width="1000" ></p>
+<p align="center"><img src='fnn_ndkl.png' width="1000" ></p>
