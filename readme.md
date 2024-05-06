@@ -25,8 +25,8 @@ To this end, pre- and post-processing debiasing techniques have been initially p
 
 
 </td>
-<td><img src='./misc/adila_flow_.png' width="600" align="right"" /></td>
-<!-- <td><img src='./src/mdl/vivafemme_loss.jpg' width="90%%" /></td> -->
+<td><img src='./src/mdl/VF.jpg' width="600" align="right"" /></td>
+<!-- <td><img src='./src/mdl/VF.jpg' width="90%%" /></td> -->
 </tr>
 </table>
 
