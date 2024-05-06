@@ -186,14 +186,10 @@ We used [``pytrec_eval``](https://github.com/cvangysel/pytrec_eval) to evaluate 
 |Sensitive Attributes| gender(running ...)|
 |Baselines|{bnn, fnn}|
 
-The following table is a sample result of vivaFemme on imdb dataset and fnn embedding baseline:
-<p align="center"><img src='./misc/bnn_emb.png'></p>
+The following table is a sample result of vivaFemme on imdb dataset and bnn and fnn embedding baseline:
 
+<p align="center"><img src='./src/mdl/bnn_utility.png' width="550" ></p>
+<p align="center"><img src='./src/mdl/fnn_utility.png' width="550" ></p>
 
-
-
-## 5. Acknowledgement:
-We benefit from [``pytrec_eval``](https://github.com/cvangysel/pytrec_eval), [``gensim``](https://radimrehurek.com/gensim/), [Josh Feldman's blog](https://joshfeldman.net/WeightUncertainty/), and other libraries. We would like to thank the authors of these libraries and helpful resources.
-  
-## 6. License:
-©2021. This work is licensed under a [CC BY-NC-SA 4.0](license.txt) license.
+<p align="center"><img src='./src/mdl/bnn_ndkl.png' width="1000" ></p>
+<p align="center"><img src='./src/mdl/fnn_ndkl.png' width="1000" ></p>
