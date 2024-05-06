@@ -63,13 +63,13 @@ torch==1.6.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html
 
 ```sh
 cd src
-python -u main.py -data ../data/raw/dblp/toy.dblp.v12.json -domain dblp -model fnn bnn -fairness det_greedy -attribute popularity
+python -u main.py -data ../data/raw/imdb/toy.dblp.v12.json -domain imdb -model fnn (or bnn) -filter 1 -augment 1
 ```
 
-The above run, loads and preprocesses a tiny-size toy example dataset [``toy.dblp.v12.json``](data/raw/dblp/toy.dblp.v12.json) from [``dblp``](https://originalstatic.aminer.cn/misc/dblp.v12.7z) followed by _n_-fold train-evaluation on a training split and final test on the test set for ``feedforward`` and ``Bayesian`` neural models using default hyperparameters from [``./src/param.py``](./src/param.py). Then, the predictions will be passed through the `det_greedy` reranking fairness algorithm to mitigate popularity bias in teams with default `k_max`, `np_ratio` fromn [``./src/param.py``](./src/param.py).
+The above run, loads and preprocesses a tiny-size toy example dataset [``toy.dblp.v12.json``](data/raw/dblp/toy.dblp.v12.json) from [``dblp``](https://originalstatic.aminer.cn/misc/dblp.v12.7z) followed by _n_-fold train-evaluation on a training split and final test on the test set for ``feedforward`` and ``Bayesian`` neural models using default hyperparameters from [``./src/param.py``](./src/param.py). To change the loss function that the model uses, from [``./src/param.py``](./src/param.py) change the hyperparameter ns to 'vf' or 'vf_' in the models's setting(fnn,bnn) and for training the model with the cross-entropy loss function replace it with 'none'.
 
 ```
-python -u main.py -data ../data/raw/dblp/toy.dblp.v12.json -domain dblp -model tbnn tbnn_dt2v_emb
+python -u main.py -data ../data/raw/imdb/toy.dblp.v12.json -domain imdb -model fnn (or bnn) -filter 1 -augment 1
 ```
 
 This script loads and preprocesses the same dataset [``toy.dblp.v12.json``](data/raw/dblp/toy.dblp.v12.json) from [``dblp``](https://originalstatic.aminer.cn/misc/dblp.v12.7z), takes the teams from the the last year as the test set and trains the ``Bayesian`` neural model following our proposed streaming training strategy as explained in ``3.2.2. Temporal Neural Team Formation`` with two different input representations _i_) sparse vector represntation and _ii_) temporal skill vector represntation using default hyperparameters from [``./src/param.py``](./src/param.py).
@@ -162,14 +162,10 @@ To include a negative sampling strategy, there are two parameters for a model to
 #### **3.7. Run**
 
 The pipeline accepts three required list of values:
-1) ``-data``: list of path to the raw datafiles, e.g., ``-data ./../data/raw/dblp/dblp.v12.json``, or the main file of a dataset, e.g., ``-data ./../data/raw/imdb/title.basics.tsv``
-2) ``-domain``: list of domains of the raw data files that could be ``dblp``, ``imdb``, or `uspt`; e.g., ``-domain dblp imdb``.
-3) ``-model``: list of baseline models that could be ``fnn``, ``fnn_emb``, ``bnn``, ``bnn_emb``, ``tfnn``, ``tfnn_emb``, ``tfnn_dt2v_emb``, ``tbnn``, ``tbnn_emb``, ``tbnn_dt2v_emb``, ``random``; e.g., ``-model random fnn bnn tfnn tbnn tfnn_dt2v_emb tbnn_dt2v_emb``.
+1) ``-data``: the main file of a dataset, e.g., ``-data ./../data/raw/imdb/title.basics.tsv``
+2) ``-domain``: list of domains of the raw data files that could be  ``imdb``; e.g., ``-domain imdb``.
+3) ``-model``: list of baseline models that could be ``fnn``, ``bnn``; e.g., ``-model fnn bnn``.
 
-Here is a brief explanation of the models:
-- ``fnn``, ``bnn``, ``fnn_emb``, ``bnn_emb``: follows the standard machine learning training procedure.
-- ``tfnn``, ``tbnn``, ``tfnn_emb``, ``tbnn_emb``: follows our proposed streaming training strategy without adding temporal information to the input of the models.
-- ``tfnn_dt2v_emb``, ``tbnn_dt2v_emb``: follows our proposed streaming training strategy and employs temporal skills as input of the models.
 
 ## 4. Results
 
@@ -187,42 +183,12 @@ We used [``pytrec_eval``](https://github.com/cvangysel/pytrec_eval) to evaluate 
 |--------|------|
 |Datasets|[dblp.v12](https://originalstatic.aminer.cn/misc/dblp.v12.7z), [imdb](https://imdb.com/interfaces/), [uspt](https://patentsview.org/download/data-download-tables) (running ...)|
 |Metrics|ndkl, map@2,5,10, ndcg@2,5,10, auc|
-|Sensitive Attributes| popularity, gender(running ...)|
-|Baselines|{bnn, random}×{sparse, emb}×{unigram_b}|
-|Results|for further details and results, please visit [Adila's submodule](https://github.com/fani-lab/Adila)|
+|Sensitive Attributes| gender(running ...)|
+|Baselines|{bnn, fnn}|
 
-The following table is a sample result of Adila module's reranking on imdb dataset and bnn embedding baseline:
+The following table is a sample result of vivaFemme on imdb dataset and fnn embedding baseline:
 <p align="center"><img src='./misc/bnn_emb.png'></p>
 
-**2. Non-Temporal Neural Team Formation**
-
-||min. #member's team: 75, min team size: 3, epochs: 20, learning rate: 0.1, hidden layer: [1, 100d], minibatch: 4096, #negative samples: 3|
-|--------|------|
-|Datasets|[dblp.v12](https://originalstatic.aminer.cn/misc/dblp.v12.7z), [imdb](https://imdb.com/interfaces/), [uspt](https://patentsview.org/download/data-download-tables) (running ...)|
-|Metrics|recall@2,5,10, map@2,5,10, ndcg@2,5,10, p@2,5,10, auc|
-|Baselines|{fnn,bnn}×{sparse, emb}×{none, uniform, unigram, unigram_b}|
-|Results|[``./output/dblp.v12.json.filtered.mt75.ts3/``](./output/dblp.v12.json.filtered.mt75.ts3/), [``./output/title.basics.tsv.filtered.mt75.ts3/``](./output/title.basics.tsv.filtered.mt75.ts3/)|
-
-<p align="center">
-<img src='https://user-images.githubusercontent.com/8619934/154041216-c80cccfb-70a2-4831-8781-cdb4718fb00e.png' >
-<img src='https://user-images.githubusercontent.com/8619934/154041087-e4d99b1e-eb6b-456a-837b-840e4bd5090a.png' >
-
-Full predictions of all models on test and training sets and the values of evaluation metrics, per instance and average, are available in a rar file of size ``74.8GB`` and will be delivered upon request! 
-
-**3. Temporal Neural Team Prediction**
-
-We kick-started our experiments based on the best results from the non-temporal neural team formation experiments.
-
-||min. #member's team: 75, min team size: 3, epochs: 20, learning rate: 0.1, hidden layer: [1, 128d], minibatch: 128, #negative samples: 3|
-|--------|------|
-|Datasets|[dblp.v12](https://originalstatic.aminer.cn/misc/dblp.v12.7z), [imdb](https://imdb.com/interfaces/), [uspt](https://patentsview.org/download/data-download-tables)|
-|Metrics|recall@2,5,10, map@2,5,10, ndcg@2,5,10, p@2,5,10, auc|
-|Baselines|{bnn, tbnn}×{sparse, emb, dt2v_emb}×{unigram_b},{[rrn](https://dl.acm.org/doi/10.1145/3018661.3018689)}|
-|Results|[``./output/dblp.v12.json.filtered.mt75.ts3/``](./output/dblp.v12.json.filtered.mt75.ts3/), [``./output/title.basics.tsv.filtered.mt75.ts3/``](./output/title.basics.tsv.filtered.mt75.ts3/), [``./output/patent.tsv.filtered.mt75.ts3/``](./output/patent.tsv.filtered.mt75.ts3/)|
-
-<p align="center"><img src='./output/ecir_results.PNG'></p>
-
-Full predictions of all models on test and training sets and the values of evaluation metrics are available in a rar file and will be delivered upon request! 
 
 
 
