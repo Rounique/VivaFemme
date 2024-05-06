@@ -1,6 +1,6 @@
 # ``VivaFemme``: Mitigating Gender Bias in Neural Team Recommendation via Female-Advocate Loss Regularization
 
-To this end, pre- and post-processing debiasing techniques have been initially proposed, mainly for being model-agnostic with little to no modification to the model's architecture. However, their limited mitigation performance has proven futile, especially in the presence of extreme bias, e.g. 5% female experts in the training datasets, urging further development of in-process debiasing techniques. In this paper, we are the first to propose an in-process gender debiasing method in neural team recommendation via a novel modification to models' conventional cross-entropy loss function. Specifically, (1) we dramatically penalize the model (i.e., an increase to the loss) for false negative female experts, and meanwhile, (2) we randomly sample from female experts and reinforce the likelihood of female participation in the predicted teams, even at the cost of increasing false positive females. Our experiments on a benchmark dataset withholding extreme gender bias demonstrate our method's competence in mitigating neural models' gender bias while maintaining accuracy, resulting in diverse yet successful teams.
+As modern tasks have been surpassing the capacity of individuals, collaborative teams of experts have become vital in today's diverse landscape across academia, industry, law, freelancing, and healthcare. The team recommendation problem, also known as team allocation, team selection, team composition, and team configuration, seeks to automate the assembly of experts in a team whose combined skills solve challenging tasks. Team recommendation can be seen as social information retrieval (Social IR), where the right group of experts, rather than relevant information, is required to accomplish the task at hand. Traditionally, even now in many scientific and industrial sectors, teams have been formed manually by relying on human experience and instinct, a process that is tedious, error-prone, and suboptimal due to hidden personal and societal biases, a multitude of criteria to optimize, and an overwhelming number of candidates, among other reasons. Notably, the team formation has been heavily influenced by the individuals' subjective opinions which inherit hidden and unfair societal biases, largely ignoring the diversity in recommending expert members of a team, resulting in discrimination and reduced visibility for already disadvantaged female experts, disproportionate selection of male experts, and gender disparities. 
 
 <table border=0>
 <tr>
@@ -75,15 +75,13 @@ python -u main.py -data ../data/raw/dblp/toy.dblp.v12.json -domain dblp -model t
 This script loads and preprocesses the same dataset [``toy.dblp.v12.json``](data/raw/dblp/toy.dblp.v12.json) from [``dblp``](https://originalstatic.aminer.cn/misc/dblp.v12.7z), takes the teams from the the last year as the test set and trains the ``Bayesian`` neural model following our proposed streaming training strategy as explained in ``3.2.2. Temporal Neural Team Formation`` with two different input representations _i_) sparse vector represntation and _ii_) temporal skill vector represntation using default hyperparameters from [``./src/param.py``](./src/param.py).
 
 ## 3. Features
-#### **3.1. [`Adila`](https://github.com/fani-lab/Adila): Fairness aware Team Formation**
+#### **3.1. vivaFemme
 
-While state-of-the-art neural team formation methods are able to efficiently analyze massive collections of experts to form effective collaborative teams, they largely ignore the fairness in recommended teams of experts. In `Adila`, we study the application of `fairness-aware` team formation algorithms to mitigate the potential popularity bias in the neural team formation models. We support two fairness notions namely, `equality of opportunity` and `demographic parity`. To achieve fairness, we utilize three deterministic greedy reranking algorithms (`det_greedy`, `det_cons`, `det_relaxed`) in addition to `fa*ir`, a probabilistic greedy reranking algorithm . 
-
-
-<p align="center"><img src='./misc/adila_flow.png' width="1000" ></p>
+Neural team recommendation has brought state-of-the-art efficacy while enhancing efficiency at forming teams of experts whose success in completing complex tasks is almost surely guaranteed. Yet proposed methods overlook diversity; that is, predicted teams are male-dominated and female participation is scarce. To this end, pre- and post-processing debiasing techniques have been initially proposed, mainly for being model-agnostic with little to no modification to the model's architecture. However, their limited mitigation performance has proven futile, especially in the presence of extreme bias, urging further development of \textit{in}-process debiasing techniques. In this paper, we are the first to propose an in-process gender debiasing method in neural team recommendation via a novel modification to models' conventional cross-entropy loss function. Specifically, (1) we dramatically penalize the model (i.e., an increase to the loss) for false negative female experts, and meanwhile, (2) we randomly sample from female experts and reinforce the likelihood of female participation in the predicted teams, even at the cost of increasing false positive females.
 
 
-For further details and demo, please visit [Adila's submodule](https://github.com/fani-lab/Adila).
+<p align="center"><img src='./src/mdl/VF.jpg' width="1000" ></p>
+
 
 #### **3.2. Datasets and Parallel Preprocessing**
 
