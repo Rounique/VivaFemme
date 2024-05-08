@@ -30,7 +30,7 @@ As modern tasks have been surpassing the capacity of individuals, collaborative 
 </table>
 
 
-## 1. [Setup]
+## 1. Setup
 You need to have ``Python >= 3.8`` and install the following main packages, among others listed in [``requirements.txt``](requirements.txt):
 ```
 torch>=1.9.0
