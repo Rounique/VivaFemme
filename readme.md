@@ -163,9 +163,9 @@ We used [``pytrec_eval``](https://github.com/cvangysel/pytrec_eval) to evaluate 
 **1. Fair Team Formation Results**
 ||min. #member's team: 75, min team size: 3, epochs: 20, learning rate: 0.1, hidden layer: [1, 100d], minibatch: 4096, #negative samples: 3|
 |--------|------|
-|Datasets|[dblp.v12](https://originalstatic.aminer.cn/misc/dblp.v12.7z), [imdb](https://imdb.com/interfaces/), [uspt](https://patentsview.org/download/data-download-tables) (running ...)|
+|Datasets| [imdb](https://imdb.com/interfaces/)|
 |Metrics|ndkl, map@2,5,10, ndcg@2,5,10, auc|
-|Sensitive Attributes| gender(running ...)|
+|Sensitive Attributes| gender|
 |Baselines|{bnn, fnn}|
 
 The following table is a sample result of vivaFemme on imdb dataset and bnn and fnn embedding baseline:
