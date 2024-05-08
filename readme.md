@@ -30,26 +30,12 @@ As modern tasks have been surpassing the capacity of individuals, collaborative 
 </table>
 
 
-## 1. [Setup](https://colab.research.google.com/github/fani-lab/OpeNTF/blob/main/quickstart.ipynb)
+## 1. [Setup]
 You need to have ``Python >= 3.8`` and install the following main packages, among others listed in [``requirements.txt``](requirements.txt):
 ```
 torch>=1.9.0
 pytrec-eval-terrier==0.5.2
 gensim==3.8.3
-```
-By ``pip``, clone the codebase and install required packages:
-```sh
-git clone --recursive https://github.com/Fani-Lab/opentf
-cd opentf
-pip install -r requirements.txt
-```
-By [``conda``](https://www.anaconda.com/products/individual):
-
-```sh
-git clone --recursive https://github.com/Fani-Lab/opentf
-cd opentf
-conda env create -f environment.yml
-conda activate opentf
 ```
 
 For installation of specific version of a python package due to, e.g., ``CUDA`` versions compatibility, one can edit [``requirements.txt``](requirements.txt) or [``environment.yml``](environment.yml) like as follows:
@@ -58,7 +44,7 @@ For installation of specific version of a python package due to, e.g., ``CUDA`` 
 # CUDA 10.1
 torch==1.6.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html
 ```
-## 2. Quickstart [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/fani-lab/Adila/blob/main/quickstart.ipynb)
+## 2. Quickstart
 
 ```sh
 cd src
