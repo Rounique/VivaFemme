@@ -14,13 +14,11 @@ As modern tasks have been surpassing the capacity of individuals, collaborative 
   * [`Fairness aware Team Formation`](#31-adila-fairness-aware-team-formation)
   * [`Datasets and Parallel Preprocessing`](#32-datasets-and-parallel-preprocessing)
   * [`Non-Temporal Neural Team Formation`](#33-non-temporal-neural-team-formation)
-  * [`Temporal Neural Team Prediction`](#34-temporal-neural-team-prediction)
   * [`Model Architecture`](#35-model-architecture)
   * [`Negative Sampling Strategies`](#36-negative-sampling-strategies)
   * [`Run`](#37-run)
 - [4. Results](#4-results)
 - [5. Acknowledgement](#5-acknowledgement)
-- [6. License](#6-license)
 
 
 
@@ -112,15 +110,12 @@ Please note that the preprocessing step will be executed once. Subsequent runs l
 
 We randomly take ``85%`` of the dataset for the train-validation set and ``15%`` as the test set, i.e., the model never sees these instances during training or model tuning. You can change ``train_test_split`` parameter in [``./src/param.py``](./src/param.py).
 
-#### **3.4. Temporal Neural Team Prediction**
-
-Previous works in team formation presumed that teams follow the i.i.d property and hence when training their models they followed the bag of teams approach, where they train and validate their models on a shuffled dataset of teams. Moreover, they were interpolative and did not try to predict _future_ successful teams. In this work, we aim at extrapolating and predicting _future_ teams of experts. We sort the teams by time intervals and train a neural model incrementally  through the ordered collection of teams in [C<sub>0</sub>, ..C<sub>t</sub>, ..C<sub>T</sub>]. As can be seen in Figure below, after random initialization of skills’ and experts’ embeddings at t=0, we start training the model on the teams in the first time interval C<sub>0</sub> for a number of epochs, then we continue with training  on the second time interval C<sub>1</sub> using the learned embeddings from the previous time interval and so forth until we finish the training on the last training time interval C<sub>t=T</sub>. We believe that using this approach, will help the model understand how experts’ skills and collaborative ties evolve through time and the final embeddings are their optimum representation in the latent space to predict _future_ successful teams at time interval C<sub>t=T+1</sub>.
 
 <p align="center"><img src='tntf.png' width="600"></p>
 
 
 
-#### **3.5. Model Architecture**
+#### **3.4. Model Architecture**
 
 Each model has been defined in [``./src/mdl/``](./src/mdl/) under an inheritance hierarchy. They override abstract functions for ``train``, ``test``, ``eval``, and ``plot`` steps.
 
@@ -146,7 +141,7 @@ iii) Temporal skill vector represntation ([``team2vec``](src/mdl/team2vec/team2d
 
 3) In OpeNTF2, The ``Nmt`` wrapper class is designed to make use of advanced transformer models and encoder-decoder models that include multiple ``LSTM`` or ``GRU`` cells, as well as various attention mechanisms. ``Nmt`` is responsible for preparing the necessary input and output elements and invokes the executables of ``opennmt-py`` by creating a new process using Python's ``subprocess`` module. Additionally, because the ``Nmt`` wrapper class inherits from ``Ntf``, these models can also take advantage of temporal training strategies through ``tNtf``.
 
-#### **3.6. Negative Sampling Strategies**
+#### **3.5. Negative Sampling Strategies**
 
 As known, employing ``unsuccessful`` teams convey complementary negative signals to the model to alleviate the long-tail problem. Most real-world training datasets in the team formation domain, however, do not have explicit unsuccessful teams (e.g., collections of rejected papers.) In the absence of unsuccessful training instances, we proposed negative sampling strategies based on the ``closed-world`` assumption where no currently known successful group of experts for the required skills is assumed to be unsuccessful.  We study the effect of ``three`` different negative sampling strategies: two based on static distributions, and one based on adaptive noise distribution:
 
@@ -160,7 +155,7 @@ To include a negative sampling strategy, there are two parameters for a model to
 - ``ns``: the negative sampling strategy which can be ``uniform``, ``unigram``, ``unigram_b`` or ``None``(no negative sampling).
 - ``nns``: number of negative samples
 
-#### **3.7. Run**
+#### **3.6. Run**
 
 The pipeline accepts three required list of values:
 1) ``-data``: the main file of a dataset, e.g., ``-data ./../data/raw/imdb/title.basics.tsv``
