@@ -31,6 +31,7 @@ The process of team recommendation, also known as team formation, automates the 
 
 
 ## 1. Setup
+
 You need to have ``Python >= 3.8`` and install the following main packages, among others listed in [``requirements.txt``](requirements.txt):
 ```
 torch>=1.9.0
@@ -44,21 +45,20 @@ For installation of specific version of a python package due to, e.g., ``CUDA`` 
 # CUDA 10.1
 torch==1.6.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html
 ```
+You can download the repository from the right top corner of the page (There are some inconsistencies between the anonymous page and the actual GitHub page of the project. These discrepancies are due to the need to keep the page and its links anonymous. They will be made consistent upon acceptance of the paper).
 ## 2. Quickstart
 
 ```sh
 cd src
-python -u main.py -data ../data/raw/imdb/toy.title.basics.tsv  -domain imdb -model fnn (or bnn) -filter 1 -augment 1
+python -u main.py -data ../data/raw/imdb/toy.title.basics.tsv -domain imdb -model fnn (or bnn) -filter 1 -augment 1
 
 ```
 
-The above run, loads and preprocesses a tiny-size toy example dataset [``toy.dblp.v12.json``](data/raw/dblp/toy.dblp.v12.json) from [``dblp``](https://originalstatic.aminer.cn/misc/dblp.v12.7z) followed by _n_-fold train-evaluation on a training split and final test on the test set for ``feedforward`` and ``Bayesian`` neural models using default hyperparameters from [``./src/param.py``](./src/param.py). To change the loss function that the model uses, from [``./src/param.py``](./src/param.py) change the hyperparameter ns to 'vf' or 'vf_' in the models's setting(fnn,bnn) and for training the model with the cross-entropy loss function replace it with 'none'.
+The above run, loads and preprocesses a tiny-size toy example dataset [`/toy.title.basics.tsv``](data/raw/imdb/toy.title.basics.tsvn) from [``imdb``] followed by _n_-fold train-evaluation on a training split and final test on the test set for ``feedforward`` and ``Bayesian`` neural models using default hyperparameters from [``./src/param.py``](./src/param.py). To change the loss function that the model uses, from [``./src/param.py``](./src/param.py) change the hyperparameter ns to 'vf' or 'vf_' in the models's setting(fnn,bnn) and for training the model with the cross-entropy loss function replace it with 'none'.
 
 ```
 python -u main.py -data ../data/raw/imdb/toy.title.basics.tsv -domain imdb -model fnn (or bnn) -filter 1 -augment 1
 ```
-
-This script loads and preprocesses the same dataset [``toy.dblp.v12.json``](data/raw/dblp/toy.dblp.v12.json) from [``dblp``](https://originalstatic.aminer.cn/misc/dblp.v12.7z), takes the teams from the the last year as the test set and trains the ``Bayesian`` neural model following our proposed streaming training strategy as explained in ``3.2.2. Temporal Neural Team Formation`` with two different input representations _i_) sparse vector represntation and _ii_) temporal skill vector represntation using default hyperparameters from [``./src/param.py``](./src/param.py).
 
 ## 3. Features
 
@@ -133,17 +133,7 @@ iii) Temporal skill vector represntation ([``team2vec``](src/mdl/team2vec/team2d
 
 #### **3.5. Negative Sampling Strategies**
 
-As known, employing ``unsuccessful`` teams convey complementary negative signals to the model to alleviate the long-tail problem. Most real-world training datasets in the team formation domain, however, do not have explicit unsuccessful teams (e.g., collections of rejected papers.) In the absence of unsuccessful training instances, we proposed negative sampling strategies based on the ``closed-world`` assumption where no currently known successful group of experts for the required skills is assumed to be unsuccessful.  We study the effect of ``three`` different negative sampling strategies: two based on static distributions, and one based on adaptive noise distribution:
-
-1) Uniform distribution (``uniform``), where subsets of experts are randomly chosen with the ``same probability`` as unsuccessful teams from the uniform distribution over all subsets of experts.
-
-2) Unigram distribution (``unigram``), where subsets of experts are chosen regarding ``their frequency`` in all previous successful teams. Intuitively, teams of experts that have been more successful but for other skill subsets will be given a higher probability and chosen more frequently as a negative sample to dampen the effect of popularity bias.
-
-3) Smoothed unigram distribution in each training minibatch (``unigram_b``), where we employed the ``add-1 or Laplace smoothing`` when computing the unigram distribution of the experts but in each training minibatch. Minibatch stochastic gradient descent is the _de facto_ method for neural models where the data is split into batches of data, each of which is sent to the model for the partial calculation to speed up training while maintaining high accuracy. 
-
-To include a negative sampling strategy, there are two parameters for a model to set in [``./src/param.py``](src/param.py):
-- ``ns``: the negative sampling strategy which can be ``uniform``, ``unigram``, ``unigram_b`` or ``None``(no negative sampling).
-- ``nns``: number of negative samples
+We compare the impact of our proposed loss function on mitigating the gender bias of two reference neural architectures: (1) feed-forward non-Bayesian (non-variational) neural network and (2) the-state-of-the-art Bayesian (variational) neural network. Both models include a single hidden layer of size d=128 and leaky relu is the activation function for the hidden layer. For the input layer, we used sparse occurrence vector representations (multi-hot encoded) of skills of size $|\mathcal{S}|$. The output layer is the sparse occurrence vector representations (multi-hot encoded) of experts of size $|\mathcal{E}|$. We trained the neural models using the binary cross-entropy xe as the biased baseline, vivaFemme without random samplings of female experts vf_, and vivaFemme with random sampling vf of $k=|\mathcal{G}_f|$ female experts from $\mathbb{P}=$\texttt{uniform} distribution for increasing punitive coefficients.
 
 #### **3.6. Run**
 
@@ -179,6 +169,12 @@ The following table is a sample result of vivaFemme on imdb dataset and bnn and 
 
 <p align="center"><img src='bnn_ndkl.png' width="600" ></p>
 <p align="center"><img src='fnn_ndkl.png' width="600" ></p>
+
+<p align="center">
+  <img src="ndcg_fnn" alt="ndcg_fnn.png" width="48%">
+  <img src="p_fnn" alt="p_fnn.png" width="48%">
+</p>
+
 
 
 
