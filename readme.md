@@ -11,7 +11,6 @@ The process of team recommendation, also known as team formation, automates the 
 - [1. Setup](#1-setup)
 - [2. Quickstart](#2-quickstart)
 - [3. Features](#3-features)
-  * [`Fairness aware Team Formation`](#31-adila-fairness-aware-team-formation)
   * [`Datasets and Parallel Preprocessing`](#32-datasets-and-parallel-preprocessing)
   * [`Non-Temporal Neural Team Formation`](#33-non-temporal-neural-team-formation)
   * [`Model Architecture`](#35-model-architecture)
@@ -162,7 +161,7 @@ We used [``pytrec_eval``](https://github.com/cvangysel/pytrec_eval) to evaluate 
 |Sensitive Attributes| gender|
 |Baselines|{bnn, fnn}|
 
-The following table is a sample result of vivaFemme on imdb dataset and bnn and fnn embedding baseline:
+The following table is the results of vivaFemme on imdb dataset and bnn and fnn embedding baseline:
 
 <p align="center"><img src='bnn_utility.png' width="550" ></p>
 <p align="center"><img src='fnn_utility.png' width="550" ></p>
@@ -171,8 +170,13 @@ The following table is a sample result of vivaFemme on imdb dataset and bnn and 
 <p align="center"><img src='fnn_ndkl.png' width="600" ></p>
 
 <p align="center">
-  <img src="ndcg_fnn" alt="ndcg_fnn.png" width="48%">
-  <img src="p_fnn" alt="p_fnn.png" width="48%">
+    <img src="ndcg_fnn.png" alt="ndcg_fnn" width="48%">
+    <img src="p_fnn.png" alt="p_fnn" width="48%">
+</p>
+
+<p align="center">
+    <img src="map_fnn.png" alt="ndcg_fnn" width="48%">
+    <img src="auc_fnn.png" alt="p_fnn" width="48%">
 </p>
 
 
