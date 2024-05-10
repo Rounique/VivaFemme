@@ -48,13 +48,14 @@ torch==1.6.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html
 
 ```sh
 cd src
-python -u main.py -data ../data/raw/imdb/toy.dblp.v12.json -domain imdb -model fnn (or bnn) -filter 1 -augment 1
+python -u main.py -data ../data/raw/imdb/toy.title.basics.tsv  -domain imdb -model fnn (or bnn) -filter 1 -augment 1
+
 ```
 
 The above run, loads and preprocesses a tiny-size toy example dataset [``toy.dblp.v12.json``](data/raw/dblp/toy.dblp.v12.json) from [``dblp``](https://originalstatic.aminer.cn/misc/dblp.v12.7z) followed by _n_-fold train-evaluation on a training split and final test on the test set for ``feedforward`` and ``Bayesian`` neural models using default hyperparameters from [``./src/param.py``](./src/param.py). To change the loss function that the model uses, from [``./src/param.py``](./src/param.py) change the hyperparameter ns to 'vf' or 'vf_' in the models's setting(fnn,bnn) and for training the model with the cross-entropy loss function replace it with 'none'.
 
 ```
-python -u main.py -data ../data/raw/imdb/toy.dblp.v12.json -domain imdb -model fnn (or bnn) -filter 1 -augment 1
+python -u main.py -data ../data/raw/imdb/toy.title.basics.tsv -domain imdb -model fnn (or bnn) -filter 1 -augment 1
 ```
 
 This script loads and preprocesses the same dataset [``toy.dblp.v12.json``](data/raw/dblp/toy.dblp.v12.json) from [``dblp``](https://originalstatic.aminer.cn/misc/dblp.v12.7z), takes the teams from the the last year as the test set and trains the ``Bayesian`` neural model following our proposed streaming training strategy as explained in ``3.2.2. Temporal Neural Team Formation`` with two different input representations _i_) sparse vector represntation and _ii_) temporal skill vector represntation using default hyperparameters from [``./src/param.py``](./src/param.py).
