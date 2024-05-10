@@ -11,7 +11,6 @@ The process of team recommendation, also known as team formation, automates the 
 - [1. Setup](#1-setup)
 - [2. Quickstart](#2-quickstart)
 - [3. Features](#3-features)
-  * [`Datasets and Parallel Preprocessing`](#32-datasets-and-parallel-preprocessing)
   * [`Non-Temporal Neural Team Formation`](#33-non-temporal-neural-team-formation)
   * [`Model Architecture`](#35-model-architecture)
   * [`Negative Sampling Strategies`](#36-negative-sampling-strategies)
@@ -61,28 +60,7 @@ python -u main.py -data ../data/raw/imdb/toy.title.basics.tsv -domain imdb -mode
 
 ## 3. Features
 
-#### **3.1. Datasets and Parallel Preprocessing**
-Raw dataset, e.g. movies from [``imdb``](https://datasets.imdbws.com/), were assumed to be populated in [``data/raw``](data/raw). For the sake of integration test, tiny-size toy example datasets [``toy.name.basics.tsv``](data/raw/imdb/toy.name.basics.tsv)] from [``imdb``](https://datasets.imdbws.com/) have been already provided.
-
-
-Raw data will be preprocessed into two main ``sparse`` matrices each row of which represents: 
-
-``vecs['skill']``: occurrence (boolean) vector representation for required skills for a team, e.g., keywords of a paper or genre of a movie.
-
-Also, indexes will be created to map the vector's indexes to members' names and skills' names, i.e., ``i2c``, ``c2i``, ``i2s``, ``s2i``.
-
-The sparse matrices and the indices will be persisted in [``data/preprocessed/{imdb}/{name of dataset}``](data/preprocessed/) as pickles ``teamsvecs.pkl`` and ``indexes.pkl``. 
-
-> Our pipeline benefits from parallel generation of sparse matrices for teams that significantly reduces the preprocessing time as shown below:
-> 
-> <p align="center"><img src="speedup.jpg" width="200"><img src="./data/speedup_loglog.jpg" width="190"></p>
-
-
-Please note that the preprocessing step will be executed once. Subsequent runs load the persisted pickle files. In order to regenerate them, one should simply delete them. 
-
-
-
-#### **3.2. vivaFemme
+#### **3.1. vivaFemme
 
 Neural team recommendation has brought state-of-the-art efficacy while enhancing efficiency at forming teams of experts whose success in completing complex tasks is almost surely guaranteed. Yet proposed methods overlook diversity; that is, predicted teams are male-dominated and female participation is scarce. To this end, pre- and post-processing debiasing techniques have been initially proposed, mainly for being model-agnostic with little to no modification to the model's architecture. However, their limited mitigation performance has proven futile, especially in the presence of extreme bias, urging further development of \textit{in}-process debiasing techniques. In this paper, we are the first to propose an in-process gender debiasing method in neural team recommendation via a novel modification to models' conventional cross-entropy loss function. Specifically, (1) we dramatically penalize the model (i.e., an increase to the loss) for false negative female experts, and meanwhile, (2) we randomly sample from female experts and reinforce the likelihood of female participation in the predicted teams, even at the cost of increasing false positive females.
 
@@ -92,26 +70,19 @@ Neural team recommendation has brought state-of-the-art efficacy while enhancing
 
 
 
-
-
-
-#### **3.3. Non-Temporal Neural Team Formation**
+#### **3.2. Non-Temporal Neural Team Formation**
 
 We randomly take ``85%`` of the dataset for the train-validation set and ``15%`` as the test set, i.e., the model never sees these instances during training or model tuning. You can change ``train_test_split`` parameter in [``./src/param.py``](./src/param.py).
 
 
-<p align="center"><img src='tntf.png' width="600"></p>
-
-
-
-#### **3.4. Model Architecture**
+#### **3.3. Model Architecture**
 
 Each model has been defined in [``./src/mdl/``](./src/mdl/) under an inheritance hierarchy. They override abstract functions for ``train``, ``test``, ``eval``, and ``plot`` steps.
 
 For example, for our feedforward baseline [``fnn``](./src/mdl/fnn.py), the model has been implemented in [``./src/mdl/fnn.py``](src/mdl/fnn.py). Model's hyperparameters such as the learning rate (``lr``) or the number of epochs (``e``) can be set in [``./src/param.py``](src/param.py).
 
 
-<p align="center"><img src='./src/mdl/team_inheritance_hierarchy.png' width="550" ></p>
+<p align="center"><img src='model_arch.png' width="550" ></p>
   
 Currently, we support neural models:
 1) Bayesian [``bnn``](./src/mdl/bnn.py) where model's parameter (weights) is assumed to be drawn from Gaussian (Normal) distribution and the task is to not to learn the weight but the mean (μ) and standard deviation (σ) of the distribution at each parameter.
@@ -120,21 +91,13 @@ Currently, we support neural models:
 
 2) non-Bayesian feedforward [``fnn``](./src/mdl/fnn.py) where the model's parameter (weights) is to be learnt.
 
-The input to the models is the vector representations for (_temporal_) skills and the output is the vector representation for members. In another word, given the input skills, the models predict the members from the pool of candidates. We support three vector representations:
+The input to the models is the vector representations for (_temporal_) skills and the output is the vector representation for members. In another word, given the input skills, the models predict the members from the pool of candidates. 
 
-i) Sparse vector representation (occurrence or boolean vector): See preprocessing section above.
+#### **3.4. Negative Sampling Strategies**
 
-ii) Dense vector representation ([``team2vec``](src/mdl/team2vec/team2doc2vec.py)): Inspired by paragraph vectors by [Le and Mikolov](https://cs.stanford.edu/~quocle/paragraph_vector.pdf), we consider a team as a document and skills as the document words (``embtype == 'skill'``). Using distributed memory model, we map skills into a real-valued embedding space. Likewise and separately, we consider members as the document words and map members into real-valued vectors (``embtype == 'member'``). We also consider mapping skills and members into the same embedding space (``embtype == 'joint'``). Our embedding method benefits from [``gensim``](https://radimrehurek.com/gensim/) library.
+We compare the impact of our proposed loss function on mitigating the gender bias of two reference neural architectures: (1) feed-forward non-Bayesian (non-variational) neural network and (2) the-state-of-the-art Bayesian (variational) neural network. Both models include a single hidden layer of size d=128 and leaky relu is the activation function for the hidden layer. For the input layer, we used sparse occurrence vector representations (multi-hot encoded) of skills of size $|\mathcal{S}|$. The output layer is the sparse occurrence vector representations (multi-hot encoded) of experts of size $|\mathcal{E}|$. We trained the neural models using the binary cross-entropy xe as the biased baseline, vivaFemme without random samplings of female experts vf_, and vivaFemme with random sampling vf of $k=|\mathcal{G}_f|$ female experts from $\mathbb{P}= uniform distribution for increasing punitive coefficients.
 
-iii) Temporal skill vector represntation ([``team2vec``](src/mdl/team2vec/team2doc2vec.py)): Inspired by [Hamilton et al.](https://aclanthology.org/P16-1141/), we also incorporate time information into the underlying neural model besides utilizing our proposed streaming training strategy. We used the distributed memory model of Doc2Vec to generate the real-valued joint embeddings of the subset of skills and time intervals, where the skills and time intervals are the words of the document (``embtype == 'dt2v'``).
-
-3) In OpeNTF2, The ``Nmt`` wrapper class is designed to make use of advanced transformer models and encoder-decoder models that include multiple ``LSTM`` or ``GRU`` cells, as well as various attention mechanisms. ``Nmt`` is responsible for preparing the necessary input and output elements and invokes the executables of ``opennmt-py`` by creating a new process using Python's ``subprocess`` module. Additionally, because the ``Nmt`` wrapper class inherits from ``Ntf``, these models can also take advantage of temporal training strategies through ``tNtf``.
-
-#### **3.5. Negative Sampling Strategies**
-
-We compare the impact of our proposed loss function on mitigating the gender bias of two reference neural architectures: (1) feed-forward non-Bayesian (non-variational) neural network and (2) the-state-of-the-art Bayesian (variational) neural network. Both models include a single hidden layer of size d=128 and leaky relu is the activation function for the hidden layer. For the input layer, we used sparse occurrence vector representations (multi-hot encoded) of skills of size $|\mathcal{S}|$. The output layer is the sparse occurrence vector representations (multi-hot encoded) of experts of size $|\mathcal{E}|$. We trained the neural models using the binary cross-entropy xe as the biased baseline, vivaFemme without random samplings of female experts vf_, and vivaFemme with random sampling vf of $k=|\mathcal{G}_f|$ female experts from $\mathbb{P}=$\texttt{uniform} distribution for increasing punitive coefficients.
-
-#### **3.6. Run**
+#### **3.5. Run**
 
 The pipeline accepts three required list of values:
 1) ``-data``: the main file of a dataset, e.g., ``-data ./../data/raw/imdb/title.basics.tsv``
@@ -166,20 +129,12 @@ The following table is the results of vivaFemme on imdb dataset and bnn and fnn 
 <p align="center"><img src='bnn_utility.png' width="550" ></p>
 <p align="center"><img src='fnn_utility.png' width="550" ></p>
 
-<p align="center"><img src='bnn_ndkl.png' width="600" ></p>
-<p align="center"><img src='fnn_ndkl.png' width="600" ></p>
-
 <p align="center">
-    <img src="ndcg_fnn.png" alt="ndcg_fnn" width="48%">
-    <img src="p_fnn.png" alt="p_fnn" width="48%">
+    <img src="util.png" alt="util" width="700">
 </p>
 
-<p align="center">
-    <img src="map_fnn.png" alt="ndcg_fnn" width="48%">
-    <img src="auc_fnn.png" alt="p_fnn" width="48%">
-</p>
-
-
+<p align="center"><img src='bnn_ndkl.png' width="800" ></p>
+<p align="center"><img src='fnn_ndkl.png' width="800" ></p>
 
 
 ## 5. Acknowledgement:
